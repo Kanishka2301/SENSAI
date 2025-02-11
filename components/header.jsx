@@ -7,8 +7,11 @@ import { LayoutDashboard } from "lucide-react";
 
 const Header = () => {
   return (
-    <header>
-      <nav>
+    <header
+      className="fixed top-0 w-full border-b bg-backgroung/80 backdrop-blur-md z-50 
+    supports-[backdrop-filter]:bg-background/60"
+    >
+      <nav className="container mx-auto px-4 h-16 flex items-center justify-between">
         <Link href="/">
           <Image
             src="/logo.png"
@@ -23,7 +26,7 @@ const Header = () => {
             <Link href={"/dashboard"}>
               <Button>
                 <LayoutDashboard className="h-4 w-4" />
-                Industry Insights
+                <span className="hidden md:block">Industry Insights</span>
               </Button>
             </Link>
           </SignedIn>
