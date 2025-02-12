@@ -6,9 +6,23 @@ import Image from "next/image";
 
 const HeroSection = () => {
   const imageRef = useRef(null);
+
   useEffect(() => {
-    const scrollPosition = window.scrollY;
-    const scrollThreshold = 100;
+    const imageElement = imageRef.current;
+    if (!imageElement) return;
+
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY;
+      const scrollThreshold = 100;
+
+      if (scrollPosition > scrollThreshold) {
+        imageElement.classList.add("scrolled");
+      } else {
+        imageElement.classList.remove("scrolled");
+      }
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
