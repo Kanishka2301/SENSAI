@@ -1,9 +1,16 @@
+"use client";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { Button } from "./ui/button";
 import Image from "next/image";
 
 const HeroSection = () => {
+  const imageRef = useRef(null);
+  useEffect(() => {
+    const scrollPosition = window.scrollY;
+    const scrollThreshold = 100;
+  }, []);
+
   return (
     <section className="w-full pt-36 md:pt-48 pb-10">
       <div className="space-y-6 text-center">
@@ -30,8 +37,8 @@ const HeroSection = () => {
             </Button>
           </Link>
         </div>
-        <div>
-          <div>
+        <div className="hero-image-wrapper mt-5 md:mt-0">
+          <div ref={imageRef} className="hero-image">
             <Image
               src={"/banner.jpeg"}
               width={1280}
