@@ -1,7 +1,11 @@
+import { industries } from "@/data/industries";
 import React from "react";
 
 const OnboardingPage = () => {
-  return <div>OnboardingPage</div>;
+  return;
+  <main>
+    <OnboardingForm industries={industries} />
+  </main>;
 };
 
 export default OnboardingPage;
