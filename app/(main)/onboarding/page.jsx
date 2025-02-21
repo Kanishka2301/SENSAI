@@ -1,11 +1,13 @@
 import { industries } from "@/data/industries";
-import React from "react";
+import { getUserOnboardingStatus } from "@/actions/user";
 
-const OnboardingPage = () => {
-  return;
-  <main>
-    <OnboardingForm industries={industries} />
-  </main>;
+const OnboardingPage = async () => {
+  const { isOnboarded } = await getUserOnboardingStatus();
+  return (
+    <main>
+      <OnboardingForm industries={industries} />
+    </main>
+  );
 };
 
 export default OnboardingPage;
