@@ -37,6 +37,18 @@ export async function updateUser(data) {
             },
           });
         }
+        const updatedUser = await tx.user.update({
+          where: {
+            id: user.id,
+          },
+          data: {
+            industry: data.industry,
+            experience: data.experience,
+            bio: data.bio,
+            skills: data.skills,
+          },
+        });
+        return { updatedUser, industryInsights };
       },
       {
         timeout: 10000,
@@ -46,5 +58,32 @@ export async function updateUser(data) {
   } catch (error) {
     console.error("Error updating user and industry:", error.message);
     throw new Error("Failed to update profile");
+  }
+}
+export async function getUserOnboardingStatus() {
+  const { userId } = await auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  const user = await db.user.findUnique({
+    where: {
+      ClerkUserId: userId,
+    },
+  });
+  if (!user) throw new Error("User not found");
+  try {
+    const user = await db.user.findUnique({
+      where: {
+        ClerkUserId: userId,
+      },
+      select: {
+        industry: true,
+      },
+    });
+    return {
+      isOnboarded: !!user?.industry,
+    };
+  } catch (error) {
+    console.error("Error checking onboarding status:", error.message);
+    throw new Error("Failed to check onboarding status");
   }
 }
