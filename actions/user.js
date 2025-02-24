@@ -8,9 +8,10 @@ export async function updateUser(data) {
 
   const user = await db.user.findUnique({
     where: {
-      ClerkUserId: userId,
+      clerkUserId: userId,
     },
   });
+
   if (!user) throw new Error("User not found");
   try {
     const result = await db.$transaction(
@@ -66,14 +67,14 @@ export async function getUserOnboardingStatus() {
 
   const user = await db.user.findUnique({
     where: {
-      ClerkUserId: userId,
+      clerkUserId: userId,
     },
   });
   if (!user) throw new Error("User not found");
   try {
     const user = await db.user.findUnique({
       where: {
-        ClerkUserId: userId,
+        clerkUserId: userId,
       },
       select: {
         industry: true,
