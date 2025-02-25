@@ -3,7 +3,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { onboardingSchema } from "@/app/lib/schema";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   Card,
@@ -25,13 +25,15 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import useFetch from "@/hooks/user-fetch";
 import { updateUser } from "@/actions/user";
+import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 const OnboardingForm = ({ industries }) => {
   const [selectedIndustry, setSelectedIndustry] = useState(null);
   const router = useRouter();
 
   const {
-    loading: updatedLoading,
+    loading: updateLoading,
     fn: updateUserFn,
     data: updateResult,
   } = useFetch(updateUser);
@@ -46,8 +48,30 @@ const OnboardingForm = ({ industries }) => {
     resolver: zodResolver(onboardingSchema),
   });
   const onSubmit = async (values) => {
-    console.log(values);
+    try {
+      const formattedIndustry = `${values.industry}-${values.subIndustry
+        .toLowerCase()
+        .replace(/ /g, "-")}`;
+
+      const response = await updateUserFn({
+        ...values,
+        industry: formattedIndustry,
+      });
+
+      console.log("Update response:", response);
+    } catch (error) {
+      console.error("Onboarding error:", error);
+    }
   };
+
+  useEffect(() => {
+    console.log("updateResult:", updateResult);
+    if (updateResult?.success && !updateLoading) {
+      toast.success("Profile completed successfully");
+      router.push("/dashboard");
+      router.refresh();
+    }
+  }, [updateResult, updateLoading]);
 
   const watchIndustry = watch("industry");
 
@@ -100,7 +124,7 @@ const OnboardingForm = ({ industries }) => {
               <div className="space-y-2">
                 <Label htmlFor="subIndustry">Specialization</Label>
                 <Select
-                  onValueChnage={(value) => {
+                  onValueChange={(value) => {
                     setValue("subIndustry", value);
                   }}
                 >
@@ -171,8 +195,15 @@ const OnboardingForm = ({ industries }) => {
               )}
             </div>
 
-            <Button type="submit" className="w-full">
-              Complete Profile
+            <Button type="submit" className="w-full" disabled={updateLoading}>
+              {updateLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                "Complete Profile"
+              )}
             </Button>
           </form>
         </CardContent>
