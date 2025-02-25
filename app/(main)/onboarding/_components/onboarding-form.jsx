@@ -20,6 +20,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
 const OnboardingForm = ({ industries }) => {
   const [selectedIndustry, setSelectedIndustry] = useState(null);
@@ -33,6 +35,7 @@ const OnboardingForm = ({ industries }) => {
   } = useForm({
     resolver: zodResolver(onboardingSchema),
   });
+  const onSubmit = async (values) => {};
 
   const watchIndustry = watch("industry");
 
@@ -49,7 +52,7 @@ const OnboardingForm = ({ industries }) => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form>
+          <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
             <div className="space-y-2">
               <Label htmlFor="industry">Industry</Label>
               <Select
@@ -109,6 +112,52 @@ const OnboardingForm = ({ industries }) => {
                 )}
               </div>
             )}
+
+            <div className="space-y-2">
+              <Label htmlFor="experience">Years of Experience</Label>
+              <Input
+                id="experience"
+                type="number"
+                min="0"
+                max="50"
+                placeholder="Enter years of experience"
+                {...register("experience")}
+              />
+
+              {errors.experience && (
+                <p className="text-sm text-red-500">
+                  {errors.experience.message}
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="skills">Skills</Label>
+              <Input
+                id="skills"
+                placeholder="e.g., Python,Javascript,Project Management"
+                {...register("skills")}
+              />
+              <p className="text-sm text-muted-foreground">
+                Separate multiple skills with commas
+              </p>
+              {errors.skills && (
+                <p className="text-sm text-red-500">{errors.skills.message}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="bio">Professional Bio</Label>
+              <Textarea
+                id="bio"
+                placeholder="Tell us about your professional background..."
+                className="h-32"
+                {...register("bio")}
+              />
+              {errors.bio && (
+                <p className="text-sm text-red-500">{errors.bio.message}</p>
+              )}
+            </div>
           </form>
         </CardContent>
       </Card>
