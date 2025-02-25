@@ -23,10 +23,19 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import useFetch from "@/hooks/user-fetch";
+import { updateUser } from "@/actions/user";
 
 const OnboardingForm = ({ industries }) => {
   const [selectedIndustry, setSelectedIndustry] = useState(null);
   const router = useRouter();
+
+  const {
+    loading: updatedLoading,
+    fn: updateUserFn,
+    data: updateResult,
+  } = useFetch(updateUser);
+
   const {
     register,
     handleSubmit,
