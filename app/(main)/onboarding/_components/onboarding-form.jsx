@@ -22,6 +22,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 
 const OnboardingForm = ({ industries }) => {
   const [selectedIndustry, setSelectedIndustry] = useState(null);
@@ -35,7 +36,9 @@ const OnboardingForm = ({ industries }) => {
   } = useForm({
     resolver: zodResolver(onboardingSchema),
   });
-  const onSubmit = async (values) => {};
+  const onSubmit = async (values) => {
+    console.log(values);
+  };
 
   const watchIndustry = watch("industry");
 
@@ -158,6 +161,10 @@ const OnboardingForm = ({ industries }) => {
                 <p className="text-sm text-red-500">{errors.bio.message}</p>
               )}
             </div>
+
+            <Button type="submit" className="w-full">
+              Complete Profile
+            </Button>
           </form>
         </CardContent>
       </Card>
