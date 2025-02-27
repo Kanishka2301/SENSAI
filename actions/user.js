@@ -20,8 +20,9 @@ export async function updateUser(data) {
     const result = await db.$transaction(
       async (tx) => {
         // Look up the industryInsight record by the industry string
-        const industryInsight = await tx.industryInsight.findUnique({
+        let industryInsight = await tx.industryInsight.findUnique({
           where: { industry: data.industry },
+          select: { marketOutlook: true }, // ✅ Fetching `marketOutlook`
         });
 
         console.log("🔍 Existing Industry Insight:", industryInsight);
@@ -29,25 +30,22 @@ export async function updateUser(data) {
         if (!industryInsight) {
           console.log("⚡ Creating new Industry Insight...");
 
-          const newIndustryInsightData = {
-            industry: data.industry,
-            salaryRanges: [],
-            growthRate: 0,
-            demandLevel: "MEDIUM",
-            topSkills: [],
-            marketOutlook: "NEUTRAL", // ✅ Correct spelling
-            keyTrends: [],
-            recommendedSkills: [],
-            nextUpdate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-          };
-
-          console.log("New Industry Insight Data:", newIndustryInsightData); // 🛠 Debugging output
-
-          await tx.industryInsight.create({
-            data: newIndustryInsightData,
+          industryInsight = await tx.industryInsight.create({
+            data: {
+              industry: data.industry,
+              salaryRanges: [],
+              growthRate: 0,
+              demandLevel: "MEDIUM",
+              topSkills: [],
+              marketOutlook: "NEUTRAL", // ✅ Default value if missing
+              keyTrends: [],
+              recommendedSkills: [],
+              nextUpdate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+            },
+            select: { marketOutlook: true }, // ✅ Ensure `marketOutlook` is included
           });
         } else {
-          console.log("✅ Industry Insight already exists, skipping creation.");
+          console.log("✅ Industry Insight already exists.");
         }
 
         // Update the user with profile details
@@ -71,7 +69,7 @@ export async function updateUser(data) {
     return { success: true, ...result };
   } catch (error) {
     console.error("Error updating user and industry:", error.message);
-    throw new Error("Failed to update profile" + error.message);
+    throw new Error("Failed to update profile: " + error.message);
   }
 }
 
@@ -95,6 +93,6 @@ export async function getUserOnboardingStatus() {
     };
   } catch (error) {
     console.error("Error checking onboarding status:", error.message);
-    throw new Error("Failed to check onboarding status");
+    throw new Error("Failed to check onboarding status" + error.message);
   }
 }
