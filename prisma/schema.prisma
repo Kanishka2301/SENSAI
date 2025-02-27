@@ -69,7 +69,7 @@ model IndustryInsight {
   growthRate        Float
   demandLevel       DemandLevel
   topSkills         String[]
-  marketOutook      MarketOutlook
+  marketOutlook     MarketOutlook
   keyTrends         String[]
   recommendedSkills String[]
   lastUpdated       DateTime      @default(now())

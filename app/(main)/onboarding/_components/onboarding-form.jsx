@@ -24,7 +24,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import useFetch from "@/hooks/user-fetch";
-import { updateUser } from "@/actions/user";
+import { updateUser, getUserOnboardingStatus } from "@/actions/user";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -32,6 +32,7 @@ const OnboardingForm = ({ industries }) => {
   const [selectedIndustry, setSelectedIndustry] = useState(null);
   const router = useRouter();
 
+  // Use our custom hook to call updateUser
   const {
     loading: updateLoading,
     fn: updateUserFn,
@@ -47,31 +48,47 @@ const OnboardingForm = ({ industries }) => {
   } = useForm({
     resolver: zodResolver(onboardingSchema),
   });
+
   const onSubmit = async (values) => {
     try {
+      // Format the industry value (combining industry and subIndustry)
       const formattedIndustry = `${values.industry}-${values.subIndustry
         .toLowerCase()
         .replace(/ /g, "-")}`;
 
-      const response = await updateUserFn({
+      await updateUserFn({
         ...values,
         industry: formattedIndustry,
       });
-
-      console.log("Update response:", response);
     } catch (error) {
       console.error("Onboarding error:", error);
     }
   };
 
+  // Effect to redirect on successful update
   useEffect(() => {
-    console.log("updateResult:", updateResult);
     if (updateResult?.success && !updateLoading) {
       toast.success("Profile completed successfully");
       router.push("/dashboard");
       router.refresh();
     }
   }, [updateResult, updateLoading]);
+
+  // Check onboarding status to auto-redirect if already onboarded
+  useEffect(() => {
+    const checkOnboardingStatus = async () => {
+      try {
+        const { isOnboarded } = await getUserOnboardingStatus();
+        if (isOnboarded) {
+          router.push("/dashboard");
+        }
+      } catch (error) {
+        console.error("Error checking onboarding status:", error);
+      }
+    };
+
+    checkOnboardingStatus();
+  }, []);
 
   const watchIndustry = watch("industry");
 
@@ -89,6 +106,7 @@ const OnboardingForm = ({ industries }) => {
         </CardHeader>
         <CardContent>
           <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+            {/* Industry selection */}
             <div className="space-y-2">
               <Label htmlFor="industry">Industry</Label>
               <Select
@@ -104,13 +122,11 @@ const OnboardingForm = ({ industries }) => {
                   <SelectValue placeholder="Select an industry" />
                 </SelectTrigger>
                 <SelectContent>
-                  {industries.map((ind) => {
-                    return (
-                      <SelectItem value={ind.id} key={ind.id}>
-                        {ind.name}
-                      </SelectItem>
-                    );
-                  })}
+                  {industries.map((ind) => (
+                    <SelectItem value={ind.id} key={ind.id}>
+                      {ind.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               {errors.industry && (
@@ -120,25 +136,22 @@ const OnboardingForm = ({ industries }) => {
               )}
             </div>
 
+            {/* Specialization selection */}
             {watchIndustry && (
               <div className="space-y-2">
                 <Label htmlFor="subIndustry">Specialization</Label>
                 <Select
-                  onValueChange={(value) => {
-                    setValue("subIndustry", value);
-                  }}
+                  onValueChange={(value) => setValue("subIndustry", value)}
                 >
                   <SelectTrigger id="subIndustry">
-                    <SelectValue placeholder="Select an industry" />
+                    <SelectValue placeholder="Select a specialization" />
                   </SelectTrigger>
                   <SelectContent>
-                    {selectedIndustry?.subIndustries.map((ind) => {
-                      return (
-                        <SelectItem value={ind} key={ind}>
-                          {ind}
-                        </SelectItem>
-                      );
-                    })}
+                    {selectedIndustry?.subIndustries.map((ind) => (
+                      <SelectItem value={ind} key={ind}>
+                        {ind}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
                 {errors.subIndustry && (
@@ -149,6 +162,7 @@ const OnboardingForm = ({ industries }) => {
               </div>
             )}
 
+            {/* Experience input */}
             <div className="space-y-2">
               <Label htmlFor="experience">Years of Experience</Label>
               <Input
@@ -159,7 +173,6 @@ const OnboardingForm = ({ industries }) => {
                 placeholder="Enter years of experience"
                 {...register("experience")}
               />
-
               {errors.experience && (
                 <p className="text-sm text-red-500">
                   {errors.experience.message}
@@ -167,6 +180,7 @@ const OnboardingForm = ({ industries }) => {
               )}
             </div>
 
+            {/* Skills input */}
             <div className="space-y-2">
               <Label htmlFor="skills">Skills</Label>
               <Input
@@ -182,6 +196,7 @@ const OnboardingForm = ({ industries }) => {
               )}
             </div>
 
+            {/* Bio input */}
             <div className="space-y-2">
               <Label htmlFor="bio">Professional Bio</Label>
               <Textarea

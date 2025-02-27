@@ -68,7 +68,7 @@ CREATE TABLE "IndustryInsight" (
     "growthRate" DOUBLE PRECISION NOT NULL,
     "demandLevel" "DemandLevel" NOT NULL,
     "topSkills" TEXT[],
-    "marketOutook" "MarketOutlook" NOT NULL,
+    "marketOutlook" "MarketOutlook" NOT NULL,
     "keyTrends" TEXT[],
     "recommendedSkills" TEXT[],
     "lastUpdated" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,

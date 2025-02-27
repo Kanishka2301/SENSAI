@@ -2,10 +2,12 @@
 import { db } from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 
+// Function to update a user’s profile
 export async function updateUser(data) {
   const { userId } = await auth();
   if (!userId) throw new Error("Unauthorized");
 
+  // Look up the user by Clerk user ID
   const user = await db.user.findUnique({
     where: {
       clerkUserId: userId,
@@ -13,29 +15,42 @@ export async function updateUser(data) {
   });
 
   if (!user) throw new Error("User not found");
+
   try {
     const result = await db.$transaction(
       async (tx) => {
-        let industryInsights = await tx.industryInsights.findUnique({
-          where: {
-            industry: data.industry,
-          },
+        // Look up the industryInsight record by the industry string
+        const industryInsight = await tx.industryInsight.findUnique({
+          where: { industry: data.industry },
         });
-        if (!industryInsights) {
-          industryInsights = await tx.industryInsights.create({
-            data: {
-              industry: data.industry,
-              salaryRanges: [],
-              growthRate: 0,
-              demandLevel: "MEDIUM",
-              topSkills: [],
-              MarketOutlook: "NEUTRAL",
-              keyTrends: [],
-              recommendedSkills: [],
-              nextUpdate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-            },
+
+        console.log("🔍 Existing Industry Insight:", industryInsight);
+
+        if (!industryInsight) {
+          console.log("⚡ Creating new Industry Insight...");
+
+          const newIndustryInsightData = {
+            industry: data.industry,
+            salaryRanges: [],
+            growthRate: 0,
+            demandLevel: "MEDIUM",
+            topSkills: [],
+            marketOutlook: "NEUTRAL", // ✅ Correct spelling
+            keyTrends: [],
+            recommendedSkills: [],
+            nextUpdate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+          };
+
+          console.log("New Industry Insight Data:", newIndustryInsightData); // 🛠 Debugging output
+
+          await tx.industryInsight.create({
+            data: newIndustryInsightData,
           });
+        } else {
+          console.log("✅ Industry Insight already exists, skipping creation.");
         }
+
+        // Update the user with profile details
         const updatedUser = await tx.user.update({
           where: {
             id: user.id,
@@ -47,28 +62,24 @@ export async function updateUser(data) {
             skills: data.skills,
           },
         });
-        return { updatedUser, industryInsights };
+
+        return { updatedUser, industryInsight };
       },
-      {
-        timeout: 10000,
-      }
+      { timeout: 10000 }
     );
+
     return { success: true, ...result };
   } catch (error) {
     console.error("Error updating user and industry:", error.message);
-    throw new Error("Failed to update profile", error.message);
+    throw new Error("Failed to update profile" + error.message);
   }
 }
+
+// Function to get the user's onboarding status
 export async function getUserOnboardingStatus() {
   const { userId } = await auth();
   if (!userId) throw new Error("Unauthorized");
 
-  const user = await db.user.findUnique({
-    where: {
-      clerkUserId: userId,
-    },
-  });
-  if (!user) throw new Error("User not found");
   try {
     const user = await db.user.findUnique({
       where: {
@@ -78,6 +89,7 @@ export async function getUserOnboardingStatus() {
         industry: true,
       },
     });
+
     return {
       isOnboarded: !!user?.industry,
     };
