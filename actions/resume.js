@@ -49,3 +49,17 @@ export async function getResume() {
     },
   });
 }
+
+export async function improveWithAI({ current, type }) {
+  const { userId } = await auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  const user = await db.user.findUnique({
+    where: { clerkUserId: userId },
+    include: {
+      industryInsight: true,
+    },
+  });
+
+  if (!user) throw new Error("User not found");
+}
