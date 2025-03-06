@@ -2,22 +2,23 @@
 
 import { Button } from "@/components/ui/button";
 import { Save } from "lucide-react";
+import { Download } from "lucide-react";
 
 const ResumeBuilder = ({ initialContent }) => {
   return (
     <div>
-      <div>
-        <h1 className="font-bold gradient-title text-5x md:text-6xl">
+      <div className="flec fex-col md:flex-row justify-between items-center gap-2">
+        <h1 className="font-bold gradient-title text-5xl md:text-6xl">
           Resume Builder
         </h1>
 
-        <div>
+        <div className="space-x-2">
           <Button variant="destructive">
             <Save className="h-4 w-4" />
             Save
           </Button>
-          <Button variant="destructive">
-            <Save className="h-4 w-4" />
+          <Button>
+            <Download className="h-4 w-4" />
             Download PDF
           </Button>
         </div>
