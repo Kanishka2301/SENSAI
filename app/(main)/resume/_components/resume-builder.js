@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 const ResumeBuilder = ({ initialContent }) => {
   return (
     <div className="space-y-4">
-      <div className="flec fex-col md:flex-row justify-between items-center gap-2">
+      <div className="flex flex-col md:flex-row justify-between items-center gap-2">
         <h1 className="font-bold gradient-title text-5xl md:text-6xl">
           Resume Builder
         </h1>
