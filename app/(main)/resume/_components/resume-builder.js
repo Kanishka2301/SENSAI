@@ -4,8 +4,48 @@ import { Button } from "@/components/ui/button";
 import { Save } from "lucide-react";
 import { Download } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { resumeSchema } from "@/app/lib/schema";
+import { saveResume } from "@/actions/resume";
+import { useEffect } from "react";
+import { Input } from "@/components/ui/input";
 
 const ResumeBuilder = ({ initialContent }) => {
+  const [activeTab, setActiveTab] = useState("edit");
+
+  const {
+    control,
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(resumeSchema),
+    defaultValues: {
+      contactInfo: {},
+      summary: "",
+      skills: "",
+      experience: [],
+      education: [],
+      projects: [],
+    },
+  });
+
+  const {
+    loading: isSaving,
+    fn: saveResumeFn,
+    data: saveResult,
+    error: saveError,
+  } = useFetch(saveResume);
+
+  const formValues = watch();
+
+  useEffect(() => {
+    if (initialContent) setActiveTab("preview");
+  }, [initialContent]);
+
   return (
     <div className="space-y-4">
       <div className="flex flex-col md:flex-row justify-between items-center gap-2">
@@ -25,15 +65,34 @@ const ResumeBuilder = ({ initialContent }) => {
         </div>
       </div>
 
-      <Tabs defaultValue="account" className="w-[400px]">
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
-          <TabsTrigger value="account">Account</TabsTrigger>
-          <TabsTrigger value="password">Password</TabsTrigger>
+          <TabsTrigger value="edit">Form</TabsTrigger>
+          <TabsTrigger value="preview">Markdown</TabsTrigger>
         </TabsList>
-        <TabsContent value="account">
-          Make changes to your account here.
+        <TabsContent value="edit">
+          <form>
+            <div>
+              <h3 className="text-lg font-medium">Contact Information</h3>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Email</label>
+                <Input
+                  {...register("contactInfo.email")}
+                  tpe="email"
+                  placeholder="your@email.com"
+                  error={errors.contactInfo?.email}
+                />
+
+                {errors.contactInfo?.email && (
+                  <p className="text-sm text-red-500">
+                    {errors.contactInfo.email.message}
+                  </p>
+                )}
+              </div>
+            </div>
+          </form>
         </TabsContent>
-        <TabsContent value="password">Change your password here.</TabsContent>
+        <TabsContent value="preview">Change your password here.</TabsContent>
       </Tabs>
     </div>
   );
