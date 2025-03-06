@@ -3,10 +3,11 @@
 import { Button } from "@/components/ui/button";
 import { Save } from "lucide-react";
 import { Download } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const ResumeBuilder = ({ initialContent }) => {
   return (
-    <div>
+    <div className="space-y-4">
       <div className="flec fex-col md:flex-row justify-between items-center gap-2">
         <h1 className="font-bold gradient-title text-5xl md:text-6xl">
           Resume Builder
@@ -23,6 +24,17 @@ const ResumeBuilder = ({ initialContent }) => {
           </Button>
         </div>
       </div>
+
+      <Tabs defaultValue="account" className="w-[400px]">
+        <TabsList>
+          <TabsTrigger value="account">Account</TabsTrigger>
+          <TabsTrigger value="password">Password</TabsTrigger>
+        </TabsList>
+        <TabsContent value="account">
+          Make changes to your account here.
+        </TabsContent>
+        <TabsContent value="password">Change your password here.</TabsContent>
+      </Tabs>
     </div>
   );
 };
