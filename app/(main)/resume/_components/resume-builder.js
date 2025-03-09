@@ -48,6 +48,8 @@ const ResumeBuilder = ({ initialContent }) => {
     if (initialContent) setActiveTab("preview");
   }, [initialContent]);
 
+  const onSubmit = async (data) => {};
+
   return (
     <div className="space-y-4">
       <div className="flex flex-col md:flex-row justify-between items-center gap-2">
@@ -73,8 +75,8 @@ const ResumeBuilder = ({ initialContent }) => {
           <TabsTrigger value="preview">Markdown</TabsTrigger>
         </TabsList>
         <TabsContent value="edit">
-          <form>
-            <div>
+          <form className="space-y-8" onSubmit={handleSubmit(onSubmit)}>
+            <div className="space-y-4">
               <h3 className="text-lg font-medium">Contact Information</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 border rounded-lg bg-muted/50">
                 <div className="space-y-2">
