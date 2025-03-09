@@ -11,6 +11,7 @@ import { resumeSchema } from "@/app/lib/schema";
 import { saveResume } from "@/actions/resume";
 import { useEffect } from "react";
 import { Input } from "@/components/ui/input";
+import useFetch from "@/hooks/user-fetch";
 
 const ResumeBuilder = ({ initialContent }) => {
   const [activeTab, setActiveTab] = useState("edit");
@@ -74,20 +75,22 @@ const ResumeBuilder = ({ initialContent }) => {
           <form>
             <div>
               <h3 className="text-lg font-medium">Contact Information</h3>
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Email</label>
-                <Input
-                  {...register("contactInfo.email")}
-                  tpe="email"
-                  placeholder="your@email.com"
-                  error={errors.contactInfo?.email}
-                />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 border rounded-lg bg-muted/50">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Email</label>
+                  <Input
+                    {...register("contactInfo.email")}
+                    tpe="email"
+                    placeholder="your@email.com"
+                    error={errors.contactInfo?.email}
+                  />
 
-                {errors.contactInfo?.email && (
-                  <p className="text-sm text-red-500">
-                    {errors.contactInfo.email.message}
-                  </p>
-                )}
+                  {errors.contactInfo?.email && (
+                    <p className="text-sm text-red-500">
+                      {errors.contactInfo.email.message}
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
           </form>
