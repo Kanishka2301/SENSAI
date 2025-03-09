@@ -5,13 +5,14 @@ import { Save } from "lucide-react";
 import { Download } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { resumeSchema } from "@/app/lib/schema";
 import { saveResume } from "@/actions/resume";
 import { useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import useFetch from "@/hooks/user-fetch";
+import { Textarea } from "@/components/ui/textarea";
 
 const ResumeBuilder = ({ initialContent }) => {
   const [activeTab, setActiveTab] = useState("edit");
@@ -91,7 +92,74 @@ const ResumeBuilder = ({ initialContent }) => {
                     </p>
                   )}
                 </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Mobile Number</label>
+                  <Input
+                    {...register("contactInfo.mobile")}
+                    tpe="tel"
+                    placeholder="+1 234 567 8900"
+                  />
+
+                  {errors.contactInfo?.mobile && (
+                    <p className="text-sm text-red-500">
+                      {errors.contactInfo.mobile.message}
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">LinkedIn URL</label>
+                  <Input
+                    {...register("contactInfo.linkedin")}
+                    tpe="url"
+                    placeholder="https://linkedin.com/in/your-profile"
+                  />
+
+                  {errors.contactInfo?.linkedin && (
+                    <p className="text-sm text-red-500">
+                      {errors.contactInfo.linkedin.message}
+                    </p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">
+                    Twitter/X Profile
+                  </label>
+                  <Input
+                    {...register("contactInfo.twitter")}
+                    tpe="url"
+                    placeholder="https://twitter.com/in/your-profile"
+                  />
+
+                  {errors.contactInfo?.twitter && (
+                    <p className="text-sm text-red-500">
+                      {errors.contactInfo.twitter.message}
+                    </p>
+                  )}
+                </div>
               </div>
+            </div>
+
+            <div className="space-y-2">
+              <h3 className="text-lg font-medium">Professional Summary</h3>
+              <Controller
+                name="summary"
+                control={control}
+                render={({ field }) => (
+                  <Textarea
+                    {...field}
+                    className="h-32"
+                    placeholder="write a compelling professional summary..."
+                    error={errors.summary}
+                  />
+                )}
+              />
+
+              {errors.summary && (
+                <p className="text-sm text-red-500">{errors.summary.message}</p>
+              )}
             </div>
           </form>
         </TabsContent>
